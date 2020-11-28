@@ -1,0 +1,71 @@
+server:
+  servlet:
+    contextPath: /uim.api.custom
+  port: ${PORT:8090}
+
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 1
+    leaseExpirationDurationInSeconds: 2
+    #    statusPageUrlPath: /diagnostics/admin/info
+    #    healthCheckUrlPath: /diagnostics/admin/health
+    metadataMap:
+      management:
+        base-url: ${server.servlet.contextPath}
+        context-path: ${server.servlet.contextPath}/actuator
+      user:
+        name: apmuser
+        password: apmpassword#
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://test:password@localhost:9999/eureka/
+
+#security:
+#  oauth2:
+#    client:
+#      clientId: browser
+#      clientSecret: 1234
+#      accessTokenUri: http://localhost:9990/auth/oauth/token
+#      grant-type: password
+#      scope: ui
+
+spring:
+  application:
+    name: uim-api-custom-service
+  profiles:
+    active: development
+  #  security:
+  #    user:
+  #      name: apmuser
+  #      password: apmpassword#
+  cloud:
+    config:
+      uri: http://localhost:8888
+      username: root
+      password: s3cr3t
+
+logging:
+  file: ../log_app/${spring.application.name}.log
+  pattern:
+    file: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+  group:
+    logging.group.error: com.ncuz.test.Application,org.exampledriven.eureka
+    logging.group.debug: com.ncuz.test.Application,org.exampledriven.eureka.customer.shared.CustomerServiceFeignClient
+    logging.group.warn: com.ncuz.test.Application,java.lang.RuntimeException
+    logging.group.info: com.ncuz.test.Application
+    logging.group.off: com.ncuz.test.Application
+
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    logfile:
+      external_file: ./log_app/${spring.application.name}.log
+    health:
+      show-details: always
